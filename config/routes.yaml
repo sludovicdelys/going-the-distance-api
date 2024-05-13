@@ -3,3 +3,8 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+# redirecting the homepage
+homepage:
+    path: /home
+    controller: App\Controller\HomeController::index
