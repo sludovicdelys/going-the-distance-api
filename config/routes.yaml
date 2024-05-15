@@ -8,3 +8,8 @@ controllers:
 homepage:
     path: /home
     controller: App\Controller\HomeController::index
+    
+runs:
+    path: /runs
+    controller: App\Controller\RunController::index
+    methods: GET
