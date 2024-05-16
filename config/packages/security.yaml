@@ -1,0 +1,7 @@
+security:
+    # ...
+    firewalls:
+        secured_area:
+            http_basic: ~
+            pattern: ^/api/runs
+            stateless: true

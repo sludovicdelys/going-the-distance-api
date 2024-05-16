@@ -37,7 +37,10 @@ class RunController extends AbstractController
             ];
         }
 
-        // Render a Twig template
+        // Return JSON response
+        return new JsonResponse(['formattedRuns' => $formattedRuns]);
+
+        /*// Render a Twig template
         $html = $this->renderView('runs/index.html.twig', [
             'formattedRuns' => $formattedRuns,
         ]);
@@ -46,7 +49,7 @@ class RunController extends AbstractController
         return new JsonResponse([
             'formattedRuns' => $formattedRuns,
             'html' => $html,
-        ]);
+        ]);*/
     }
 
     // New method for retrieving a specific run
