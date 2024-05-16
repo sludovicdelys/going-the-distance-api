@@ -9,7 +9,34 @@ homepage:
     path: /home
     controller: App\Controller\HomeController::index
     
-runs:
+# Define routes for runs CRUD operations
+runs_list:
     path: /runs
     controller: App\Controller\RunController::index
     methods: GET
+
+runs_create:
+    path: /runs
+    controller: App\Controller\RunController::create
+    methods: POST
+
+runs_read:
+    path: /runs/{id}
+    controller: App\Controller\RunController::read
+    methods: GET
+    requirements:
+        id: 1
+
+runs_update:
+    path: /runs/{id}
+    controller: App\Controller\RunController::update
+    methods: PUT
+    requirements:
+        id: 1   # Ensure id is a digit
+
+runs_delete:
+    path: /runs/{id}
+    controller: App\Controller\RunController::delete
+    methods: DELETE
+    requirements:
+        id: \d+   # Ensure id is a digit
