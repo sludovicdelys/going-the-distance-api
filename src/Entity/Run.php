@@ -1,10 +1,42 @@
 <?php
 
 namespace App\Entity;
+use ApiPlatform\Core\Annotation\ApiResource;
 
 use App\Repository\RunRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+
+#[ApiResource(
+    collectionOperations: [
+        'get' => [
+            'method' => 'GET',
+            'path' => '/runs',
+            'security' => 'is_granted("ROLE_ADMIN")'
+        ],
+        'post' => [
+            'method' => 'POST',
+            'security' => 'is_granted("ROLE_ADMIN")'
+        ]
+    ],
+    itemOperations: [
+        'get' => [
+            'method' => 'GET',
+            'path' => '/runs/{id}',
+            'security' => 'is_granted("ROLE_ADMIN")'
+        ],
+        'put' => [
+            'method' => 'PUT',
+            'path' => '/runs/{id}',
+            'security' => 'is_granted("ROLE_ADMIN")'
+        ],
+        'delete' => [
+            'method' => 'DELETE',
+            'path' => '/runs/{id}',
+            'security' => 'is_granted("ROLE_ADMIN")'
+        ]
+    ]
+)]
 
 #[ORM\Entity(repositoryClass: RunRepository::class)]
 class Run
