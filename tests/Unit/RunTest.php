@@ -113,7 +113,7 @@ class RunTest extends KernelTestCase
         // Create a new instance of Run
         $run = new Run();
 
-        $run->setUsername('LazyUsername');
+        $run->setUsername('LazyUsernameThree');
         $run->setType('EasyType');
         $run->setAverageSpeed(10);
         $run->setRunningPace(new DateTime);
@@ -127,19 +127,27 @@ class RunTest extends KernelTestCase
         $this->entityManager->persist($run);
         $this->entityManager->flush();
 
-        $runs = $this->entityManager->getRepository(Run::class)->findAll();
+        /*$runs = $this->entityManager->getRepository(Run::class)->findAll();
         // Output debugging information
         echo "All Runs: " . PHP_EOL;
-        var_dump($runs);
+        var_dump($runs);*/
 
         // Retrieve the Run entity from the database
-        $run = $this->entityManager->getRepository(Run::class)->findOneBy(['username' => 'LazyUsername']);
+        $run = $this->entityManager->getRepository(Run::class)->findOneBy(['username' => 'LazyUsernameThree']);
         
-        echo "Deleting Run with ID: " . $run->getId() . PHP_EOL;
+        /*echo "Run entity before deletion: " . PHP_EOL;
+        var_dump($run);*/
 
         // Remove the Run entity from the database
         $this->entityManager->remove($run);
         $this->entityManager->flush();
+
+        /*// Output debugging information
+        echo "Run entity after deletion: " . PHP_EOL;
+        var_dump($run);*/
+
+        // Refresh the entity manager
+        $this->entityManager->refresh($run);
 
         // Assert that the Run entity was deleted
         $this->assertNull($run);
