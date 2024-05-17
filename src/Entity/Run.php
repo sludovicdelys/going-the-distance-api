@@ -1,17 +1,15 @@
 <?php
 
 namespace App\Entity;
+
 use ApiPlatform\Metadata\Get;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RunRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
-use App\Repository\ConferenceRepository;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Serializer\Attribute\Groups;
-use Symfony\Component\String\Slugger\SluggerInterface;
+use App\Controller\GetRunsByUserController;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: RunRepository::class)]
@@ -28,6 +26,15 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             openapiContext: [
                 'summary' => 'Get a Run.',
                 'description' => '<b>EN</b> – Retrieves a Run resource.<br><b>FR</b> – Retourne une course à pied détaillé.',
+            ],
+            normalizationContext: ['groups' => ['run:read']],
+        ),
+        new GetCollection(
+            uriTemplate: '/users/{id}/runs',
+            controller: GetRunsByUserController::class,
+            openapiContext: [
+                'summary' => 'Get a list of Runs for a User.',
+                'description' => '<b>EN</b> – Retrieves an array of runs for a specific user.<br><b>FR</b> – Retourne un tableau de courses à pied pour un utilisateur spécifique.',
             ],
             normalizationContext: ['groups' => ['run:read']],
         ),

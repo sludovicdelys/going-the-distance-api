@@ -7,14 +7,14 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class RunControllerTest extends WebTestCase
 {
-    /*public function testListRuns()
+    public function testListRuns()
     {
         $client = static::createClient();
 
         $crawler = $client->request('GET', '/runs');
 
         $this->assertResponseIsSuccessful();
-    }*/
+    }
 
     public function read(): void
     {
