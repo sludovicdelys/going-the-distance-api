@@ -3,13 +3,14 @@ namespace App\Controller;
 
 use App\Repository\RunRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[AsController]
 class GetRunsByUserController extends AbstractController
@@ -19,7 +20,7 @@ class GetRunsByUserController extends AbstractController
     private $serializer;
     private $validator;
 
-    public function __construct(RunRepository $runRepository)
+    public function __construct(RunRepository $runRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator)
     {
         $this->runRepository = $runRepository;
         $this->entityManager = $entityManager;
@@ -28,13 +29,8 @@ class GetRunsByUserController extends AbstractController
     }
 
     #[Route('/users/{id}/runs', name: 'get_user_runs', methods: ['GET'])]
-    public function getRuns(int $id): JsonResponse
+    public function __invoke(int $id): JsonResponse
     {
-        $user = $this->security->getUser();
-        if (!$user || $user->getId() !== $id) {
-            return new JsonResponse(['error' => 'Access Denied'], Response::HTTP_FORBIDDEN);
-        }
-
         $runs = $this->runRepository->findBy(['user' => $id]);
 
         if (!$runs) {
