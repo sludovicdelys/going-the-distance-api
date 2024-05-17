@@ -109,7 +109,6 @@ class RunTest extends KernelTestCase
 
     public function testDeleteRun(): void
     {
-        try {
         // Create a new instance of Run
         $run = new Run();
 
@@ -151,8 +150,5 @@ class RunTest extends KernelTestCase
 
         // Assert that the Run entity was deleted
         $this->assertNull($run);
-    } catch (\Exception $e) {
-        $this->fail('An error occurred: ' . $e->getMessage());
-    }
     }
 }

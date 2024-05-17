@@ -1,82 +1,123 @@
 <?php
 
 namespace App\Entity;
-use ApiPlatform\Core\Annotation\ApiResource;
-
-use App\Repository\RunRepository;
+use ApiPlatform\Metadata\Get;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\RunRepository;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use App\Repository\ConferenceRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
+#[ORM\Entity(repositoryClass: RunRepository::class)]
 #[ApiResource(
-    collectionOperations: [
+    operations: [
+        new GetCollection(
+            openapiContext: [
+                'summary' => 'Get a list of Runs.',
+                'description' => '<b>EN</b> – Retrieves an array of runs.<br><b>FR</b> – Retourne un tableau de courses à pied.',
+            ],
+            normalizationContext: ['groups' => ['run:read']],
+        ),
+        new Get(
+            openapiContext: [
+                'summary' => 'Get a Run.',
+                'description' => '<b>EN</b> – Retrieves a Run resource.<br><b>FR</b> – Retourne une course à pied détaillé.',
+            ],
+            normalizationContext: ['groups' => ['run:read']],
+        ),
+    ],
+    /*collectionOperations: [
         'get' => [
             'method' => 'GET',
             'path' => '/runs',
-            'security' => 'is_granted("ROLE_ADMIN")'
+            'security' => 'is_granted("ROLE_ADMIN")',
+            'normalization_context' => ['groups' => ['run:read']]
         ],
         'post' => [
             'method' => 'POST',
-            'security' => 'is_granted("ROLE_ADMIN")'
+            'security' => 'is_granted("ROLE_ADMIN")',
+            'denormalization_context' => ['groups' => ['run:write']]
+        ],
+
+        'get_user_runs' => [
+            'method' => 'GET',
+            'path' => '/users/{id}/runs',
+            'security' => 'is_granted("ROLE_USER") and user === object.getUser()',
+            'controller' => GetRunsByUserController::class,
+            'normalization_context' => ['groups' => ['run:read']]
         ]
     ],
     itemOperations: [
         'get' => [
             'method' => 'GET',
             'path' => '/runs/{id}',
-            'security' => 'is_granted("ROLE_ADMIN")'
+            'security' => 'is_granted("ROLE_ADMIN")',
+            'normalization_context' => ['groups' => ['run:read']]
         ],
         'put' => [
             'method' => 'PUT',
             'path' => '/runs/{id}',
-            'security' => 'is_granted("ROLE_ADMIN")'
+            'security' => 'is_granted("ROLE_ADMIN")',
+            'denormalization_context' => ['groups' => ['run:write']]
         ],
         'delete' => [
             'method' => 'DELETE',
             'path' => '/runs/{id}',
-            'security' => 'is_granted("ROLE_ADMIN")'
+            'security' => 'is_granted("ROLE_ADMIN")',
         ]
-    ]
+    ]*/
 )]
 
-#[ORM\Entity(repositoryClass: RunRepository::class)]
 class Run
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private ?int $id;
+    #[Groups(['run:read'])]
+    private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $username = null;
-
-    #[ORM\Column(length: 255)]
+    #[Groups(['run:read', 'run:write'])]
     private ?string $type = null;
 
     #[ORM\Column]
+    #[Groups(['run:read', 'run:write'])]
     private ?int $average_speed = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Groups(['run:read', 'run:write'])]
     private ?\DateTimeInterface $running_pace = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['run:read', 'run:write'])]
     private ?\DateTimeInterface $start_date = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Groups(['run:read', 'run:write'])]
     private ?\DateTimeInterface $start_time = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Groups(['run:read', 'run:write'])]
     private ?\DateTimeInterface $time = null;
 
     #[ORM\Column]
+    #[Groups(['run:read', 'run:write'])]
     private ?int $distance = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['run:read', 'run:write'])]
     private ?string $comments = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-
     #[ORM\JoinColumn(nullable: false)]
-    private $user;
+    #[Groups(['run:read', 'run:write'])]
+    private ?User $user = null;
 
     public function getId(): ?int
     {
@@ -97,7 +138,7 @@ class Run
     // Add a method to get the username directly
     public function getUsername(): ?string
     {
-        return $this->user ? $this->user->getUsername() : null;
+        return $this->username;
     }
 
     public function setUsername(string $username): static

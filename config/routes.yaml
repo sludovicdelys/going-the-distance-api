@@ -25,18 +25,18 @@ runs_read:
     controller: App\Controller\RunController::read
     methods: GET
     requirements:
-        id: 1
+        id: '\d+'
 
 runs_update:
     path: /runs/{id}
     controller: App\Controller\RunController::update
     methods: PUT
     requirements:
-        id: 1   # Ensure id is a digit
+        id: '\d+'   # Ensure id is a digit
 
 runs_delete:
     path: /runs/{id}
     controller: App\Controller\RunController::delete
     methods: DELETE
     requirements:
-        id: \d+   # Ensure id is a digit
+        id: '\d+'  # Ensure id is a digit
