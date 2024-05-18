@@ -1,23 +1,39 @@
 security:
     password_hashers:
-        Symfony\Component\Security\Core\User\InMemoryUser:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
             algorithm: bcrypt
 
     providers:
         in_memory:
             memory:
                 users:
-                    admin:
-                        password: '%env(APP_ADMIN_PASSWORD)%'
-                        roles: 'ROLE_ADMIN'
+                    runner:
+                        password: '$2y$12$KIXyo3UCuwu9B.oZb1k0SO9cJMLtbLvL1Xb8qVroGg5IBZDpyh0gG' # hashed 'secret'
+                        roles: ['ROLE_FRONTEND']
 
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+        public:
+            pattern: ^/api
+            stateless: true
+            security: false
+
         main:
+            pattern: ^/api
             lazy: true
+            stateless: true
             provider: in_memory
             http_basic: ~
-            stateless: true 
+
+    access_control:
+        # Allow unauthenticated access to GET requests for /runs, /users/{id}/runs, and /runs/{id}
+        - { path: ^/api/runs, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [GET] }
+        - { path: ^/api/users/\d+/runs, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [GET] }
+        - { path: ^/api/runs/\d+, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [GET] }
+
+        # Restrict POST, PUT, DELETE requests to users with ROLE_FRONTEND
+        - { path: ^/api/runs, roles: ROLE_FRONTEND, methods: [POST, PUT, DELETE] }
+        - { path: ^/api/runs/\d+, roles: ROLE_FRONTEND, methods: [PUT, DELETE] }

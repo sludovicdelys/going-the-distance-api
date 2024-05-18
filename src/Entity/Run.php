@@ -3,7 +3,10 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RunRepository;
 use ApiPlatform\Metadata\ApiResource;
@@ -38,47 +41,30 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             ],
             normalizationContext: ['groups' => ['run:read']],
         ),
+        new Post(
+            security: "is_granted('ROLE_FRONTEND')",
+            openapiContext: [
+                'summary' => 'Create a new Run.',
+                'description' => '<b>EN</b> – Creates a new run resource.<br><b>FR</b> – Crée une nouvelle course à pied.',
+            ],
+            denormalizationContext: ['groups' => ['run:write']],
+        ),
+        new Put(
+            security: "is_granted('ROLE_FRONTEND')",
+            openapiContext: [
+                'summary' => 'Update a Run.',
+                'description' => '<b>EN</b> – Updates a run resource.<br><b>FR</b> – Met à jour une course à pied.',
+            ],
+            denormalizationContext: ['groups' => ['run:write']],
+        ),
+        new Delete(
+            security: "is_granted('ROLE_FRONTEND')",
+            openapiContext: [
+                'summary' => 'Delete a Run.',
+                'description' => '<b>EN</b> – Deletes a run resource.<br><b>FR</b> – Supprime une course à pied.',
+            ],
+        ),
     ],
-    /*collectionOperations: [
-        'get' => [
-            'method' => 'GET',
-            'path' => '/runs',
-            'security' => 'is_granted("ROLE_ADMIN")',
-            'normalization_context' => ['groups' => ['run:read']]
-        ],
-        'post' => [
-            'method' => 'POST',
-            'security' => 'is_granted("ROLE_ADMIN")',
-            'denormalization_context' => ['groups' => ['run:write']]
-        ],
-
-        'get_user_runs' => [
-            'method' => 'GET',
-            'path' => '/users/{id}/runs',
-            'security' => 'is_granted("ROLE_USER") and user === object.getUser()',
-            'controller' => GetRunsByUserController::class,
-            'normalization_context' => ['groups' => ['run:read']]
-        ]
-    ],
-    itemOperations: [
-        'get' => [
-            'method' => 'GET',
-            'path' => '/runs/{id}',
-            'security' => 'is_granted("ROLE_ADMIN")',
-            'normalization_context' => ['groups' => ['run:read']]
-        ],
-        'put' => [
-            'method' => 'PUT',
-            'path' => '/runs/{id}',
-            'security' => 'is_granted("ROLE_ADMIN")',
-            'denormalization_context' => ['groups' => ['run:write']]
-        ],
-        'delete' => [
-            'method' => 'DELETE',
-            'path' => '/runs/{id}',
-            'security' => 'is_granted("ROLE_ADMIN")',
-        ]
-    ]*/
 )]
 
 class Run
