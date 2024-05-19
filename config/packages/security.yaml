@@ -8,7 +8,7 @@ security:
             memory:
                 users:
                     runner:
-                        password: '$2y$12$KIXyo3UCuwu9B.oZb1k0SO9cJMLtbLvL1Xb8qVroGg5IBZDpyh0gG' # hashed 'secret'
+                        password: '%env(RUNNER_PASSWORD)%' # hashed password from environment variable
                         roles: ['ROLE_USER']
 
     firewalls:
