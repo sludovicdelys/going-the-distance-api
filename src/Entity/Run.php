@@ -42,7 +42,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             normalizationContext: ['groups' => ['run:read']],
         ),
         new Post(
-            security: "is_granted('ROLE_FRONTEND')",
             openapiContext: [
                 'summary' => 'Create a new Run.',
                 'description' => '<b>EN</b> – Creates a new run resource.<br><b>FR</b> – Crée une nouvelle course à pied.',
@@ -50,7 +49,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             denormalizationContext: ['groups' => ['run:write']],
         ),
         new Put(
-            security: "is_granted('ROLE_FRONTEND')",
             openapiContext: [
                 'summary' => 'Update a Run.',
                 'description' => '<b>EN</b> – Updates a run resource.<br><b>FR</b> – Met à jour une course à pied.',
@@ -58,7 +56,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             denormalizationContext: ['groups' => ['run:write']],
         ),
         new Delete(
-            security: "is_granted('ROLE_FRONTEND')",
             openapiContext: [
                 'summary' => 'Delete a Run.',
                 'description' => '<b>EN</b> – Deletes a run resource.<br><b>FR</b> – Supprime une course à pied.',

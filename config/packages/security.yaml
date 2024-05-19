@@ -9,7 +9,7 @@ security:
                 users:
                     runner:
                         password: '$2y$12$KIXyo3UCuwu9B.oZb1k0SO9cJMLtbLvL1Xb8qVroGg5IBZDpyh0gG' # hashed 'secret'
-                        roles: ['ROLE_FRONTEND']
+                        roles: ['ROLE_USER']
 
     firewalls:
         dev:
@@ -35,5 +35,5 @@ security:
         - { path: ^/api/runs/\d+, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [GET] }
 
         # Restrict POST, PUT, DELETE requests to users with ROLE_FRONTEND
-        - { path: ^/api/runs, roles: ROLE_FRONTEND, methods: [POST, PUT, DELETE] }
-        - { path: ^/api/runs/\d+, roles: ROLE_FRONTEND, methods: [PUT, DELETE] }
+        - { path: ^/api/runs, roles: IS_AUTHENTICATED_FULLY, methods: [POST, PUT, DELETE] }
+        - { path: ^/api/runs/\d+, roles: IS_AUTHENTICATED_FULLY, methods: [PUT, DELETE] }
