@@ -6,8 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Repository\UserRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
 {
     #[ORM\Id]
@@ -28,8 +29,6 @@ class User
     {
         $this->runs = new ArrayCollection();
     }
-
-    // Add getters and setters
 
     public function getId(): ?int
     {

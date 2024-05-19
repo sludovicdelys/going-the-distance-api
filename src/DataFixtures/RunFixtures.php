@@ -82,7 +82,7 @@ class RunFixtures extends Fixture implements DependentFixtureInterface
         foreach ($johnRuns as $runData) {
             $run = new Run();
             $run->setUser($userJohn);
-            $run->setUsername($userJohn->getUsername());
+            $run->getUsername($userJohn);
             $run->setDistance($runData['distance']);
             $run->setTime($runData['time']);
             $run->setRunningPace($runData['runningPace']);
@@ -99,7 +99,7 @@ class RunFixtures extends Fixture implements DependentFixtureInterface
         foreach ($janeRuns as $runData) {
             $run = new Run();
             $run->setUser($userJane);
-            $run->setUsername($userJane->getUsername());
+            $run->getUsername($userJane);
             $run->setDistance($runData['distance']);
             $run->setTime($runData['time']);
             $run->setRunningPace($runData['runningPace']);

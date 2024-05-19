@@ -104,7 +104,7 @@ class Run
     #[Groups(['run:read', 'run:write'])]
     private ?string $comments = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: User::class, cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['run:read', 'run:write'])]
     private ?User $user = null;
@@ -122,19 +122,6 @@ class Run
     public function setUser(?User $user): self
     {
         $this->user = $user;
-        return $this;
-    }
-
-    // Add a method to get the username directly
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): static
-    {
-        $this->username = $username;
-
         return $this;
     }
 
@@ -232,5 +219,10 @@ class Run
         $this->comments = $comments;
 
         return $this;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->user ? $this->user->getUsername() : null;
     }
 }
