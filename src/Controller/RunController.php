@@ -49,17 +49,25 @@ class RunController extends AbstractController
                 'username' => $run->getUser()->getUsername(),
                 'type' => $run->getType(),
                 'average_speed' => $run->getAverageSpeed(),
-                'running_pace' => $run->getRunningPace()->format('H:i:s'),
+                'running_pace' => $run->getRunningPace() !== null 
+                // If running pace is not null, calculate minutes and seconds
+                ? floor($run->getRunningPace() / 60) . ':' . sprintf('%02d', ($run->getRunningPace() % 60)) . 'min/km' 
+                // If running pace is null, return null
+                : null,
                 'start_date' => $run->getStartDate()->format('Y-m-d'),
-                'start_time' => $run->getStartTime()->format('H:i:s'),
-                'time' => $run->getTime()->format('H:i:s'),
+                'start_time' => $run->getStartTime()->format('H:i'),
+                'time' => $run->getTime()->format('H:i'),
                 'distance' => $run->getDistance(),
                 'comments' => $run->getComments(),
             ];
         }
 
-        return new JsonResponse(['runs' => $formattedRuns], JsonResponse::HTTP_OK, ['Content-Type' => 'application/json']);
+        // Serialize the runs
+        $serializedRuns = $this->serializer->serialize($formattedRuns, 'json', ['groups' => 'run:read']);
+
+        return new JsonResponse($serializedRuns, JsonResponse::HTTP_OK, ['Content-Type' => 'application/json'], true);
     }
+
 
     #[Route('/runs', name: 'runs_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
@@ -87,13 +95,15 @@ class RunController extends AbstractController
         $run = new Run();
         $run->setUser($user);
         $run->setType($data['type']);
-        $run->setAverageSpeed($data['average_speed']);
-        $run->setRunningPace(new \DateTime($data['running_pace']));
         $run->setStartDate(new \DateTime($data['start_date']));
         $run->setStartTime(new \DateTime($data['start_time']));
         $run->setTime(new \DateTime($data['time']));
         $run->setDistance($data['distance']);
         $run->setComments($data['comments']);
+
+        // Calculate average speed and running pace
+        $run->calculateAverageSpeed();
+        $run->calculateRunningPace();
 
         $errors = $this->validator->validate($run);
         if (count($errors) > 0) {
@@ -121,15 +131,22 @@ class RunController extends AbstractController
             'username' => $run->getUser()->getUsername(),
             'type' => $run->getType(),
             'average_speed' => $run->getAverageSpeed(),
-            'running_pace' => $run->getRunningPace()->format('H:i:s'),
-            'start_date' => $run->getStartDate()->format('Y-m-d'),
-            'start_time' => $run->getStartTime()->format('H:i:s'),
-            'time' => $run->getTime()->format('H:i:s'),
+            'running_pace' => $run->getRunningPace() !== null 
+            // If running pace is not null, calculate minutes and seconds
+            ? floor($run->getRunningPace() / 60) . ':' . sprintf('%02d', ($run->getRunningPace() % 60)) . 'min/km' 
+            // If running pace is null, return null
+            : null,
+            'start_date' => $run->getStartDate()->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d'),
+            'start_time' => $run->getStartTime()->setTimezone(new \DateTimeZone('UTC'))->format('H:i:s'),
+            'time' => $run->getTime()->setTimezone(new \DateTimeZone('UTC'))->format('H:i:s'),
             'distance' => $run->getDistance(),
             'comments' => $run->getComments(),
         ];
 
-        return $this->json($formattedRun, JsonResponse::HTTP_OK, ['Content-Type' => 'application/json']);
+        // Serialize the runs
+        $serializedRun = $this->serializer->serialize($formattedRun, 'json', ['groups' => 'run:read']);
+
+        return new JsonResponse($serializedRun, JsonResponse::HTTP_OK, ['Content-Type' => 'application/json'], true);
     }
 
     #[Route('/runs/{id}', name: 'runs_update', methods: ['PUT'])]
@@ -163,13 +180,14 @@ class RunController extends AbstractController
         // Manually update the run entity
         $run->setUser($user);
         $run->setType($data['type']);
-        $run->setAverageSpeed($data['average_speed']);
-        $run->setRunningPace(new \DateTime($data['running_pace']));
         $run->setStartDate(new \DateTime($data['start_date']));
         $run->setStartTime(new \DateTime($data['start_time']));
         $run->setTime(new \DateTime($data['time']));
         $run->setDistance($data['distance']);
         $run->setComments($data['comments']);
+
+        $run->calculateAverageSpeed();
+        $run->calculateRunningPace();
 
         $errors = $this->validator->validate($run);
         if (count($errors) > 0) {

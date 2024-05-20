@@ -13,7 +13,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Controller\GetRunsByUserController;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: RunRepository::class)]
 #[ApiResource(
@@ -80,7 +80,7 @@ class Run
     #[Groups(['run:read', 'run:write'])]
     private ?int $average_speed = null;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[ORM\Column(type: 'integer')]
     #[Groups(['run:read', 'run:write'])]
     private ?\DateTimeInterface $running_pace = null;
 
@@ -98,7 +98,7 @@ class Run
 
     #[ORM\Column]
     #[Groups(['run:read', 'run:write'])]
-    private ?int $distance = null;
+    private ?float $distance = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['run:read', 'run:write'])]
@@ -108,6 +108,27 @@ class Run
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['run:read', 'run:write'])]
     private ?User $user = null;
+
+    #[Groups(['run:read'])]
+    #[SerializedName("start_date")]
+    public function getFormattedStartDate(): string
+    {
+        return $this->start_date->format('Y-m-d');
+    }
+
+    #[Groups(['run:read'])]
+    #[SerializedName("start_time")]
+    public function getFormattedStartTime(): string
+    {
+        return $this->start_time->format('H:i');
+    }
+
+    #[Groups(['run:read'])]
+    #[SerializedName("time")]
+    public function getFormattedTime(): string
+    {
+        return $this->time->format('H:i');
+    }
 
     public function getId(): ?int
     {
@@ -137,24 +158,25 @@ class Run
         return $this;
     }
 
-    public function getAverageSpeed(): ?int
+    public function getAverageSpeed(): ?float
     {
         return $this->average_speed;
     }
 
-    public function setAverageSpeed(int $average_speed): static
+    public function setAverageSpeed(float $average_speed): static
     {
         $this->average_speed = $average_speed;
 
         return $this;
     }
 
-    public function getRunningPace(): ?\DateTimeInterface
+
+    public function getRunningPace(): ?int
     {
         return $this->running_pace;
     }
 
-    public function setRunningPace(\DateTimeInterface $running_pace): static
+    public function setRunningPace(?int $running_pace): static
     {
         $this->running_pace = $running_pace;
 
@@ -224,5 +246,30 @@ class Run
     public function getUsername(): ?string
     {
         return $this->user ? $this->user->getUsername() : null;
+    }
+
+    public function calculateAverageSpeed(): void
+    {
+        if ($this->distance > 0 && $this->time) {
+            $hours = (int)$this->time->format('H');
+            $minutes = (int)$this->time->format('i');
+            $seconds = (int)$this->time->format('s');
+            $durationInHours = $hours + ($minutes / 60) + ($seconds / 3600);
+            $this->average_speed = $this->distance / $durationInHours;
+        }
+    }
+
+    public function calculateRunningPace(): void
+    {
+        if ($this->distance > 0 && $this->time) {
+            $hours = (int)$this->time->format('H');
+            $minutes = (int)$this->time->format('i');
+            $seconds = (int)$this->time->format('s');
+            $totalMinutes = ($hours * 60) + $minutes + ($seconds / 60);
+            $paceInMinutes = $totalMinutes / $this->distance;
+            $paceMinutes = floor($paceInMinutes);
+            $paceSeconds = round(($paceInMinutes - $paceMinutes) * 60);
+            $this->running_pace = (new \DateTime())->setTime(0, $paceMinutes, $paceSeconds);
+        }
     }
 }
