@@ -1,5 +1,40 @@
 ## Back-end: Going the Distance API
 
+### 🐞 Known Issues
+
+#### Error 500 on Run Creation from Front-End App
+
+When attempting to create a run from the front-end application (https://github.com/sludovicdelys/go_the_distance), an HTTP 500 error may occur. This issue happens when sending the following data to the API:
+
+```json
+{
+  "type": "Hill",
+  "start_date": "2024-05-21",
+  "start_time": "18:00:00",
+  "time": "20:00:00",
+  "distance": 20,
+  "comments": "",
+  "user": {
+    "username": "sabrina_delys"
+  }
+}
+```
+
+The error response from the API is as follows :
+
+```bash
+{
+  "@id": "/api/errors",
+  "@type": "hydra:Error",
+  "detail": "An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'average_speed' cannot be null",
+  "hydra:description": "An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'average_speed' cannot be null",
+  "hydra:title": "An error occurred",
+  "status": 500,
+  "title": "An error occurred",
+  "type": "/errors/500"
+}
+```
+
 ### Overview
 
 This is the back-end API for the "Going the Distance" application, built with Symfony and API Platform.
