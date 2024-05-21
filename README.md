@@ -35,6 +35,8 @@ The error response from the API is as follows :
 }
 ```
 
+🕵️‍♀️ The issue might be happening in the `RunController` or the `Run` entity. I am working on a fix, but if you have any suggestions or solutions, they are more than welcome.
+
 ### Overview
 
 This is the back-end API for the "Going the Distance" application, built with Symfony and API Platform.
