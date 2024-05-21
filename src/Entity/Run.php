@@ -209,7 +209,11 @@ class Run
 
     public function setStartTime(\DateTimeInterface $start_time): static
     {
-        $this->start_time = $start_time;
+        if (is_string($start_time)) {
+            $this->start_time = \DateTime::createFromFormat('H:i', $start_time);
+        } else {
+            $this->start_time = $start_time;
+        }
 
         return $this;
     }
@@ -221,7 +225,11 @@ class Run
 
     public function setTime(\DateTimeInterface $time): static
     {
-        $this->time = $time;
+        if (is_string($time)) {
+            $this->time = \DateTime::createFromFormat('H:i', $time);
+        } else {
+            $this->time = $time;
+        }
 
         return $this;
     }
@@ -257,14 +265,22 @@ class Run
 
     public function calculateAverageSpeed(): void
     {
-        if ($this->distance > 0 && $this->time) {
-            $hours = (int)$this->time->format('H');
-            $minutes = (int)$this->time->format('i');
-            $seconds = (int)$this->time->format('s');
-            $durationInHours = $hours + ($minutes / 60) + ($seconds / 3600);
-            $this->average_speed = $this->distance / $durationInHours;
+        $this->setTime($this->time);
+        $this->setStartTime($this->start_time);
+
+        if ($this->distance > 0 && $this->time && $this->start_time) {
+            $durationInSeconds = $this->time->getTimestamp() - $this->start_time->getTimestamp();
+            if ($durationInSeconds > 0) {
+                $durationInHours = $durationInSeconds / 3600;
+                $this->average_speed = $this->distance / $durationInHours;
+            } else {
+                $this->average_speed = 0; // Set to 0 if duration is negative
+            }
+        } else {
+            $this->average_speed = 0; // Set to 0 if time, start_time, or distance is null
         }
     }
+    // "An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'average_speed' cannot be null"
 
     public function calculateRunningPace(): void
     {

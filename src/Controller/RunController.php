@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Repository\RunRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -91,15 +92,37 @@ class RunController extends AbstractController
             $this->entityManager->persist($user);
         }
 
+        /*
+        Final data: {
+            "user": {
+                "username": "john_doe"
+            },
+            "type": "Training",
+            "start_date": "2021-10-01",
+            "start_time": "20:00:00",
+            "time": "22:00:00",
+            "distance": 10.5,
+            "comments": "Nice run in the park"
+        }
+        */
+
         // Create and populate the run entity
         $run = new Run();
         $run->setUser($user);
         $run->setType($data['type']);
-        $run->setStartDate(new \DateTime($data['start_date']));
-        $run->setStartTime(new \DateTime($data['start_time']));
-        $run->setTime(new \DateTime($data['time']));
+        $run->setStartDate(\DateTime::createFromFormat('Y-m-d', $data['start_date']));
+        $$run->setStartTime($data['start_time']); // This will handle string to DateTime conversion
+        $run->setTime($data['time']); // This will handle string to DateTime conversion
         $run->setDistance($data['distance']);
         $run->setComments($data['comments']);
+
+        // Debug output
+        file_put_contents("/Users/sabrinaludovicdelys/.symfony5/log/a2ef325f5c3e6a29b0dda6fcdd3a3be5585a9193.log", print_r($run->getStartDate(), true), FILE_APPEND);
+        file_put_contents("/Users/sabrinaludovicdelys/.symfony5/log/a2ef325f5c3e6a29b0dda6fcdd3a3be5585a9193.log", print_r($run->getStartTime(), true), FILE_APPEND);
+        file_put_contents("/Users/sabrinaludovicdelys/.symfony5/log/a2ef325f5c3e6a29b0dda6fcdd3a3be5585a9193.log", print_r($run->getTime(), true), FILE_APPEND);
+
+        //throw new Exception('>>>>>>>>>>>>>>>>>>>>>>>>>>' + print_r($run->getStartDate(), true));
+        // Access to XMLHttpRequest at 'http://localhost:8000/api/runs' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
 
         // Calculate average speed and running pace
         $run->calculateAverageSpeed();
@@ -180,9 +203,9 @@ class RunController extends AbstractController
         // Manually update the run entity
         $run->setUser($user);
         $run->setType($data['type']);
-        $run->setStartDate(new \DateTime($data['start_date']));
-        $run->setStartTime(new \DateTime($data['start_time']));
-        $run->setTime(new \DateTime($data['time']));
+        $run->setStartDate(\DateTime::createFromFormat('Y-m-d', $data['start_date']));
+        $run->setStartTime($data['start_time']); // This will handle string to DateTime conversion
+        $run->setTime($data['time']); // This will handle string to DateTime conversion
         $run->setDistance($data['distance']);
         $run->setComments($data['comments']);
 
