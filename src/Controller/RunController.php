@@ -51,7 +51,7 @@ class RunController extends AbstractController
                 'average_speed' => $run->getAverageSpeed(),
                 'running_pace' => $run->getRunningPace() !== null 
                 // If running pace is not null, calculate minutes and seconds
-                ? floor($run->getRunningPace() / 60) . ':' . sprintf('%02d', ($run->getRunningPace() % 60)) . 'min/km' 
+                ? floor($run->getRunningPace()->getTimestamp() / 60) . ':' . sprintf('%02d', ($run->getRunningPace()->getTimestamp() % 60)) . 'min/km' 
                 // If running pace is null, return null
                 : null,
                 'start_date' => $run->getStartDate()->format('Y-m-d'),
@@ -133,7 +133,7 @@ class RunController extends AbstractController
             'average_speed' => $run->getAverageSpeed(),
             'running_pace' => $run->getRunningPace() !== null 
             // If running pace is not null, calculate minutes and seconds
-            ? floor($run->getRunningPace() / 60) . ':' . sprintf('%02d', ($run->getRunningPace() % 60)) . 'min/km' 
+            ? floor($run->getRunningPace()->getTimestamp() / 60) . ':' . sprintf('%02d', ($run->getRunningPace()->getTimestamp() % 60)) . 'min/km' 
             // If running pace is null, return null
             : null,
             'start_date' => $run->getStartDate()->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d'),

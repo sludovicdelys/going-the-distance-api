@@ -80,7 +80,7 @@ class Run
     #[Groups(['run:read', 'run:write'])]
     private ?int $average_speed = null;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Groups(['run:read', 'run:write'])]
     private ?\DateTimeInterface $running_pace = null;
 
@@ -108,6 +108,13 @@ class Run
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['run:read', 'run:write'])]
     private ?User $user = null;
+
+    #[Groups(['run:read'])]
+    #[SerializedName("running_pace")]
+    public function getFormattedRunningPace(): ?string
+    {
+        return $this->running_pace ? $this->running_pace->format('i:s') : null;
+    }
 
     #[Groups(['run:read'])]
     #[SerializedName("start_date")]
@@ -171,12 +178,12 @@ class Run
     }
 
 
-    public function getRunningPace(): ?int
+    public function getRunningPace(): ?\DateTimeInterface
     {
         return $this->running_pace;
     }
 
-    public function setRunningPace(?int $running_pace): static
+    public function setRunningPace(?\DateTimeInterface $running_pace): self
     {
         $this->running_pace = $running_pace;
 
